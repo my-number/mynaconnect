@@ -1,6 +1,6 @@
-import { useState, useContext } from "preact/hooks";
-import { h, Fragment } from "preact";
-import { Context } from "./Channel";
+import { useState } from "preact/hooks";
+import { h } from "preact";
+import { useChannel } from "./Channel";
 import styled from "styled-components";
 import PageContainer from "./PageContainer";
 import Btn from "./Btn";
@@ -32,9 +32,11 @@ const CancelBtn = styled(Btn)`
   }
 `;
 export default () => {
+  const channel = useChannel();
   return (
     <PageContainer>
       <Title>
+        {" "}
         <b>マイナイミテイター</b>
         <wbr />
         が操作を求めています。
@@ -56,8 +58,8 @@ export default () => {
         送信先ウェブサイトのアドレスは正しいですか？確認してみましょう。
       </AlertBox>
       <BtnBox>
-        <Btn>許可</Btn>
-        <CancelBtn>キャンセル</CancelBtn>
+        <Btn onClick={() => channel.go("AuthPassword")}>許可</Btn>
+        <CancelBtn onClick={() => alert(channel.name)}>キャンセル</CancelBtn>
       </BtnBox>
     </PageContainer>
   );

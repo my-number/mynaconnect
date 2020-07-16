@@ -1,19 +1,24 @@
-# connect
+# popup
 
-## CLI Commands
-*   `npm install`: Installs dependencies
+## Project setup
+```
+npm install
+```
 
-*   `npm run dev`: Run a development, HMR server
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-*   `npm run serve`: Run a production-like server
+### Compiles and minifies for production
+```
+npm run build
+```
 
-*   `npm run build`: Production-ready build
+### Lints and fixes files
+```
+npm run lint
+```
 
-*   `npm run lint`: Pass TypeScript files using TSLint
-
-*   `npm run test`: Run Jest and Enzyme with
-    [`enzyme-adapter-preact-pure`](https://github.com/preactjs/enzyme-adapter-preact-pure) for
-    your tests
-
-
-For detailed explanation on how things work, checkout the [CLI Readme](https://github.com/developit/preact-cli/blob/master/README.md).
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

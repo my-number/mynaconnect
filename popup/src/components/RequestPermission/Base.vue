@@ -13,15 +13,17 @@
       呼び出し元のURLは本当に正しいですか？今一度ご確認をお願いします。
     </div>
     <div class="actions">
-      <btn>許可</btn><btn transparent caution>キャンセル</btn>
+      <btn @click="$emit('allow')">許可</btn>
+
+      <btn transparent caution @click="$emit('deny')">キャンセル</btn>
     </div>
     <need-help></need-help>
   </div>
 </template>
 
 <script lang="ts">
-import Btn from "./Btn.vue";
-import NeedHelp from "./NeedHelp.vue";
+import Btn from "../Btn.vue";
+import NeedHelp from "../NeedHelp.vue";
 export default {
   components: { Btn, NeedHelp },
   name: "RequestPermission",

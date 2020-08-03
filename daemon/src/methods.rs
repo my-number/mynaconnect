@@ -1,10 +1,11 @@
 use crate::error::Error;
 use hex::decode;
-use crate::utils::check_pin;
 use crate::utils::open_card;
 use jsonrpc_core::types::Value;
 use jsonrpc_derive::rpc;
-use myna::card::apdu_trait::{Apdu, Error as ApduError};
+use myna::card::Apdu;
+use myna::utils::check_pin;
+
 use pcsc::{Card, Context, Disposition, Protocols, Scope, ShareMode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -58,7 +59,7 @@ impl Methods for RpcImpl {
         let readers: Vec<Reader> = reader_iter
             .map(|raw_name| {
                 let card_result = context.connect(raw_name, ShareMode::Shared, Protocols::ANY);
-
+                
                 Reader {
                     name: raw_name
                         .to_str()
@@ -66,6 +67,7 @@ impl Methods for RpcImpl {
                         .to_string(),
                     error: match card_result {
                         Ok(card) => {
+                            // TODO: Check jpki token(if needed)
                             let _ = card.disconnect(Disposition::LeaveCard);
                             None
                         }
@@ -97,6 +99,7 @@ impl Methods for RpcImpl {
 
         let mut responder = Responder(card);
 
+        // TODO: Check jpki token(if needed)
         responder.select_jpki_ap()?;
         responder.select_jpki_cert_auth()?;
         let cert = responder.read_binary()?;
@@ -109,6 +112,8 @@ impl Methods for RpcImpl {
         let card = open_card(name)?;
 
         let mut responder = Responder(card);
+
+        // TODO: Check jpki token(if needed)
         responder.select_jpki_ap()?;
         responder.select_jpki_auth_pin()?;
         responder.verify_pin(&pin)?;

@@ -1,7 +1,7 @@
 use hex::FromHexError;
 use jsonrpc_core::types::error::{Error as RpcErr, ErrorCode as RpcErrCode};
 use jsonrpc_core::types::Value;
-use myna::card::apdu_trait::Error as ApduError;
+use myna::error::ApduError;
 use pcsc;
 
 #[repr(i64)]

@@ -1,4 +1,6 @@
 use crate::error::Error;
+use hex::decode;
+use crate::utils::check_pin;
 use crate::utils::open_card;
 use jsonrpc_core::types::Value;
 use jsonrpc_derive::rpc;
@@ -18,12 +20,12 @@ pub struct Reader {
 struct Responder(Card);
 impl Apdu for Responder {
     type TransErr = pcsc::Error;
-    fn raw_transmit(&self, data: Vec<u8>) -> Result<Vec<u8>, Self::TransErr> {
+    fn transmit(&self, data: Vec<u8>) -> Result<Vec<u8>, Self::TransErr> {
         let card = &self.0;
 
         let mut buf = [0u8; 300];
         let result = card.transmit(&data[..], &mut buf)?;
-        println!("{:?}", result);
+        println!("{:?}", data);
         Ok(result.to_vec())
     }
 }
@@ -34,8 +36,10 @@ pub trait Methods {
     fn get_readers(&self) -> Result<Vec<Reader>, Error>;
     #[rpc(name = "getStatus")]
     fn get_status(&self, name: String) -> Result<Value, Error>;
-    #[rpc(name = "getCert")]
-    fn get_cert(&self, name: String) -> Result<Value, Error>;
+    #[rpc(name = "getAuthCert")]
+    fn get_auth_cert(&self, name: String) -> Result<Value, Error>;
+    #[rpc(name = "computeAuthSig")]
+    fn compute_auth_sig(&self, name: String, pin: String, hash_hex: String) -> Result<Value,Error>;
 }
 
 pub struct RpcImpl {}
@@ -88,7 +92,7 @@ impl Methods for RpcImpl {
             "atr": status.atr()
         }))
     }
-    fn get_cert(&self, name: String) -> Result<Value, Error> {
+    fn get_auth_cert(&self, name: String) -> Result<Value, Error> {
         let card = open_card(name)?;
 
         let mut responder = Responder(card);
@@ -97,5 +101,20 @@ impl Methods for RpcImpl {
         responder.select_jpki_cert_auth()?;
         let cert = responder.read_binary()?;
         Ok(json!({ "cert": cert }))
+    }
+    fn compute_auth_sig(&self, name: String, pin: String, hash_hex: String) -> Result<Value, Error> {
+        if !check_pin(&pin) {
+            return Err(Error::Execution("PIN is invalid"))
+        }
+        let card = open_card(name)?;
+
+        let mut responder = Responder(card);
+        responder.select_jpki_ap()?;
+        responder.select_jpki_auth_pin()?;
+        responder.verify_pin(&pin)?;
+        responder.select_jpki_auth_key()?;
+        let hash = decode(hash_hex)?;
+        let sig = responder.compute_sig(&hash[..])?;
+        Ok(json!({ "sig": sig }))
     }
 }

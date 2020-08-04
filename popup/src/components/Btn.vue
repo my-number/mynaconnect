@@ -1,5 +1,5 @@
 <template>
-  <div :class="classes">
+  <div class="btn" :class="classes" @click="$emit('click')">
     <slot></slot>
   </div>
 </template>
@@ -14,7 +14,6 @@ export default {
   computed: {
     classes() {
       return {
-        btn: true,
         transparent: this.transparent,
         caution: this.caution,
         inline: this.inline,
@@ -28,8 +27,8 @@ export default {
   border-radius: 0.5em;
   font-family: sans-serif;
   text-align: center;
-  padding: 0.6em;
-  margin: 0.2em;
+  padding: 0.6rem;
+  //margin: 0.2rem;
   background-color: #377ee1;
   color: white;
   font-weight: bold;

@@ -26,7 +26,6 @@ impl Apdu for Responder {
 
         let mut buf = [0u8; 300];
         let result = card.transmit(&data[..], &mut buf)?;
-        println!("{:?}", data);
         Ok(result.to_vec())
     }
 }

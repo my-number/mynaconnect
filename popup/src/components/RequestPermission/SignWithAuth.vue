@@ -1,9 +1,5 @@
 <template>
-  <request-permission
-    :app-name="$store.state.appName"
-    @allow="allow"
-    @deny="deny"
-  >
+  <request-permission :app-name="$store.state.appName">
     以下の内容が送信されます
     <ul>
       <li><tooltip-item>電子証明書(利用者証明用)</tooltip-item></li>
@@ -26,14 +22,6 @@ export default {
   components: {
     RequestPermission,
     TooltipItem,
-  },
-  methods: {
-    allow() {
-      this.$router.push("/auth-password");
-    },
-    deny() {
-      return false;
-    },
   },
 };
 </script>

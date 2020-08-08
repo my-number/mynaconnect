@@ -8,9 +8,11 @@ import RouteDebug from "./RouteDebug";
 import store from "../store/index";
 export default {
   components: { Spinner },
-  beforeRouteEnter(to, from, next) {
-    store.commit("setAppName", "マイナイミテータ");
-    next("/get-auth-cert");
+  mounted() {
+    this.$store.commit("setAppName", "マイナイミテータ");
+    this.$store.commit("setCommandType", "signWithAuth");
+    this.$store.commit("setSigHash", Array(33).join("00"));
+    this.$router.push("/sign-with-auth");
   },
 };
 </script>

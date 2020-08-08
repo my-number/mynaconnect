@@ -1,7 +1,7 @@
 <template>
   <span class="tooltip-item" @click="showTooltip">
     <span class="text"><slot></slot></span>
-    <!--<span class="info"><span class="icon-help_outline"></span></span>-->
+    <!--<span class="info"><span class="icon-help_outline"></span></span> for now-->
   </span>
 </template>
 
@@ -11,7 +11,7 @@ export default {
   props: {
     textId: {
       type: String,
-      required: true,
+      required: false, // false for now
     },
   },
   methods: {

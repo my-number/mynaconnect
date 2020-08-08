@@ -10,6 +10,9 @@
 import Container from "./components/Container.vue";
 export default {
   components: { Container },
+  mounted() {
+    this.$router.replace("/");
+  },
 };
 </script>
 

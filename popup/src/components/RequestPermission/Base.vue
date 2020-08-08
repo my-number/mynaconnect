@@ -13,9 +13,9 @@
       呼び出し元のURLは本当に正しいですか？今一度ご確認をお願いします。
     </div>
     <div class="actions">
-      <btn @click="$emit('allow')">許可</btn>
+      <btn @click="allow">許可</btn>
 
-      <btn transparent caution @click="$emit('deny')">キャンセル</btn>
+      <btn transparent caution @click="deny">キャンセル</btn>
     </div>
     <need-help></need-help>
   </div>
@@ -31,6 +31,14 @@ export default {
     appName: {
       type: String,
       required: true,
+    },
+  },
+  methods: {
+    allow() {
+      this.$router.push("/select-reader");
+    },
+    deny() {
+      // todo
     },
   },
 };

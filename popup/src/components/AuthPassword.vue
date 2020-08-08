@@ -1,6 +1,5 @@
 <template>
   <div class="auth-password">
-    <BackBtn />
     <div class="title"><b>利用者証明用PIN</b>を入力してください</div>
     <div class="description-container">
       <btn transparent @click="more = !more">
@@ -21,8 +20,13 @@
           </li>
         </ul>
       </div>
+      <div class="pin-remaining" v-show="pinRemaining >= 0">
+        再試行可能回数は
+        <span :class="{ low: pinRemaining < 3 }">{{ pinRemaining }}</span>
+        回です
+      </div>
     </div>
-    <keypad @submit="next"></keypad>
+    <Keypad @submit="onSubmit"></Keypad>
   </div>
 </template>
 
@@ -30,18 +34,21 @@
 import Keypad from "./Keypad.vue";
 
 import Btn from "./Btn";
-import BackBtn from "./BackBtn";
+const passwordRegex = /^[0-9]{4}$/;
 export default {
-  components: { Keypad, BackBtn, Btn },
+  components: { Keypad, Btn },
   name: "AuthPassword",
-  data: () => ({
-    more: false,
-  }),
-  props: {},
+  data() {
+    return {
+      pinRemaining:
+        this.$store.state.selectedReader.mynumberCardInfo?.authPinRemaining ||
+        -1, // -1 means no data
+      more: false,
+    };
+  },
   methods: {
-    next(pin) {
-      this.$store.commit("setPin", pin);
-      this.$router.push("/select-reader");
+    onSubmit(pin) {
+      passwordRegex.test(pin) && this.$emit("submit", pin);
     },
   },
 };
@@ -58,9 +65,14 @@ export default {
     margin: 10px auto;
     flex-direction: column;
   }
-  .back-button {
-    svg {
-      fill: #377ee1;
+  .pin-remaining {
+    text-align: center;
+    span {
+      color: #377ee1;
+      font-weight: bold;
+      &.low {
+        color: red;
+      }
     }
   }
 }

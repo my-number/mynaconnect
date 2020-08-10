@@ -3,13 +3,12 @@ use crate::utils::open_card;
 use hex::decode;
 use jsonrpc_core::types::Value;
 use jsonrpc_derive::rpc;
-use myna::card::Apdu;
+use myna::card::{Apdu, KeyType};
 use myna::utils::check_pin;
 
 use pcsc::{Card, Context, Disposition, Protocols, Scope, ShareMode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-
 
 #[derive(Serialize, Deserialize)]
 pub struct MynumberCardInfo {
@@ -17,7 +16,6 @@ pub struct MynumberCardInfo {
     authPinRemaining: u8,
     /// Sign PIN remaining count
     signPinRemaining: u8,
-    
 }
 
 #[derive(Serialize, Deserialize)]
@@ -60,6 +58,8 @@ pub trait Methods {
     fn get_reader_status(&self, name: String) -> Result<Value, Error>;
     #[rpc(name = "getAuthCert")]
     fn get_auth_cert(&self, name: String) -> Result<Value, Error>;
+    #[rpc(name = "getSignCert")]
+    fn get_sign_cert(&self, name: String) -> Result<Value, Error>;
     #[rpc(name = "computeAuthSig")]
     fn compute_auth_sig(&self, name: String, pin: String, hash_hex: String)
         -> Result<Value, Error>;
@@ -73,7 +73,7 @@ impl Default for RpcImpl {
 }
 
 impl Methods for RpcImpl {
-    fn get_version(&self) -> Result<String, Error>{
+    fn get_version(&self) -> Result<String, Error> {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
 
@@ -82,8 +82,7 @@ impl Methods for RpcImpl {
         let buflen = context.list_readers_len()?;
         let mut buf: Vec<u8> = vec![0u8; buflen];
         let reader_iter = context.list_readers(&mut buf)?;
-        let readers: Vec<Reader> = reader_iter
-            .map(|raw_name| {
+        let readers: Vec<Reader> = reader_iter.map(|raw_name| {
                 let card_result = context.connect(raw_name, ShareMode::Shared, Protocols::ANY);
 
                 let mut mynumber_card_info: Option<MynumberCardInfo> = None;
@@ -92,17 +91,18 @@ impl Methods for RpcImpl {
                         let responder = Responder(card);
                         let is_mynumber_card = responder.is_mynumber_card().unwrap_or(false);
                         if is_mynumber_card {
-                            mynumber_card_info = Some(MynumberCardInfo{
-                                authPinRemaining: {
-                                    responder.select_jpki_auth_pin();
-                                    responder.get_pin_remaining_retries().unwrap_or(0u8)
-                                },
-                                signPinRemaining: 0 // todo: implement
+                            mynumber_card_info = Some(MynumberCardInfo {
+                                authPinRemaining: responder
+                                    .get_retry_counter(KeyType::UserAuth)
+                                    .unwrap_or(0u8),
+                                signPinRemaining: responder
+                                    .get_retry_counter(KeyType::DigitalSign)
+                                    .unwrap_or(0u8),
                             })
                         }
                         let _ = responder.0.disconnect(Disposition::LeaveCard);
                         None
-                    },
+                    }
                     Err(e) => Some(e as u32),
                 };
                 Reader {
@@ -139,9 +139,16 @@ impl Methods for RpcImpl {
         let responder = Responder(card);
 
         responder.check_mynumber_card()?;
-        responder.select_jpki_ap()?;
-        responder.select_jpki_cert_auth()?;
-        let cert = responder.read_cert()?;
+        let cert = responder.get_cert(KeyType::UserAuth)?;
+        Ok(json!({ "cert": cert }))
+    }
+    fn get_sign_cert(&self, name: String) -> Result<Value, Error> {
+        let card = open_card(name)?;
+
+        let responder = Responder(card);
+
+        responder.check_mynumber_card()?;
+        let cert = responder.get_cert(KeyType::DigitalSign)?;
         Ok(json!({ "cert": cert }))
     }
     fn compute_auth_sig(
@@ -158,14 +165,9 @@ impl Methods for RpcImpl {
         let responder = Responder(card);
 
         responder.check_mynumber_card()?;
-        responder.select_jpki_ap()?;
-        responder.select_jpki_cert_auth()?;
-        let cert = responder.read_cert()?;
-        responder.select_jpki_auth_pin()?;
-        responder.verify_pin(&pin)?;
-        responder.select_jpki_auth_key()?;
+        let cert = responder.get_cert(KeyType::UserAuth)?;
         let hash = decode(hash_hex)?;
-        let sig = responder.compute_sig(&hash[..])?;
+        let sig = responder.compute_sig(&pin, &hash[..], KeyType::UserAuth)?;
         Ok(json!({ "sig": sig, "cert": cert}))
     }
 }

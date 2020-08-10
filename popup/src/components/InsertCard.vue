@@ -63,7 +63,7 @@ export default {
     this._execute();
   },
   beforeDestroy() {
-    this.clearTimer();
+    setTimeout(this._execute, INTERVAL);
   },
 };
 </script>

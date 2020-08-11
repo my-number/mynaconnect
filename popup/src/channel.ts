@@ -2,9 +2,11 @@ import { ORIGIN } from "./config";
 
 interface ChildReady {
   type: "childReady";
+  success: true;
 }
 interface ParentReady {
   type: "parentReady";
+  success: true;
   remoteOrigin: string;
   data: {
     appName: string;
@@ -14,6 +16,12 @@ interface Result {
   type: "result";
   success: boolean;
   data: any;
+}
+interface Message {
+  type: string;
+  success: boolean;
+  remoteOrigin?: string;
+  data?: object;
 }
 
 export class Channel {

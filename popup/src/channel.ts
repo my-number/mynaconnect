@@ -10,6 +10,8 @@ interface ParentReady {
   remoteOrigin: string;
   data: {
     appName: string;
+    commandType: string;
+    sigHash?: string;
   };
 }
 interface Result {
@@ -26,7 +28,6 @@ interface Message {
 
 export class Channel {
   remoteOrigin: string | null = null;
-  constructor() {}
   tellReady() {
     window.opener.postMessage(
       {
@@ -36,27 +37,20 @@ export class Channel {
     );
   }
 
-  getMessage(): Promise<ParentReady> {
+  getMessage(typeName: string): Promise<ParentReady> {
     return new Promise((resolve, reject) => {
       const handler = (e: any) => {
-        if (e.origin !== ORIGIN) {
-          reject();
-          return;
+        if (e.origin === ORIGIN && e.data.type == typeName) {
+          window.removeEventListener("message", handler);
+          resolve(e.data);
         }
-
-        window.removeEventListener("message", handler);
-        resolve(e.data);
       };
       window.addEventListener("message", handler);
     });
   }
   async handshake() {
     this.tellReady();
-    const { remoteOrigin, type, data } = await this.getMessage();
-    if (type !== "parentReady") {
-      return;
-    }
-    this.remoteOrigin = remoteOrigin;
+    const { remoteOrigin, data } = await this.getMessage("parentReady");
     return data;
   }
   async sendResult(data: any) {

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
+import { Channel } from "../channel";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -10,6 +10,7 @@ export default new Vuex.Store({
     pin: "",
     selectedReader: null,
     sigHash: "",
+    channel: new Channel(),
   }),
   mutations: {
     setSigHash(state, sigHash) {
@@ -28,6 +29,13 @@ export default new Vuex.Store({
       state.commandType = typeName;
     },
   },
-  actions: {},
+  actions: {
+    async onLoad({ state, commit }) {
+      const data = await state.channel.handshake();
+      commit("setCommandType", data.commandType);
+      commit("setAppName", data.appName);
+      data.sigHash && commit("setSigHash", data.sigHash);
+    },
+  },
   modules: {},
 });

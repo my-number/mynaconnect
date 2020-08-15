@@ -22,6 +22,7 @@
         デーモンをインストールし、起動してください。
         <br />
         起動が完了したら自動的に表示されます。
+        <btn transparent>インストールページへ</btn>
       </div>
 
       <list inset v-show="readers.length > 0">
@@ -74,6 +75,7 @@ import BackBtn from "./BackBtn.vue";
 import List from "./List.vue";
 import Spinner from "./Spinner.vue";
 import ListItem from "./ListItem.vue";
+import Btn from "./Btn";
 
 import { getReaders } from "../rpc";
 import * as pcscConst from "../utils/pcsc-consts";
@@ -88,7 +90,7 @@ export default {
     timerId: null,
     error: false,
   }),
-  components: { BackBtn, List, ListItem, Spinner },
+  components: { BackBtn, List, ListItem, Spinner, Btn },
   methods: {
     async getReader() {
       try {
@@ -109,7 +111,16 @@ export default {
     },
     selectReader(reader) {
       this.$store.commit("setReader", reader);
-      this.$router.push("/password");
+      const commandType = this.$store.state.commandType;
+      switch (commandType) {
+        case "signWithAuth":
+        case "signWithSign":
+        case "getSignCert":
+          this.$router.push("/password");
+          break;
+        default:
+          this.$router.push("/insert-card");
+      }
     },
     isNoCard(errcode: number) {
       return errcode == pcscConst.SCARD_E_NO_SMARTCARD;
@@ -146,8 +157,8 @@ export default {
     text-align: center;
   }
   .message {
-    display: flex;
-    justify-content: center;
+    /*display: flex;
+    justify-content: center;*/
   }
   .statuses .status {
     color: #999;

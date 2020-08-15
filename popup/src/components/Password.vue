@@ -1,8 +1,11 @@
 <template>
   <div class="password">
     <BackBtn />
-    <AuthPassword @submit="next" />
-    <SignPassword v-show="false" @submit="next" />
+    <AuthPassword v-show="commandType == 'signWithAuth'" @submit="next" />
+    <SignPassword
+      v-show="commandType == 'signWithSign' || commandType == 'getSignCert'"
+      @submit="next"
+    />
   </div>
 </template>
 
@@ -13,7 +16,11 @@ import BackBtn from "./BackBtn.vue";
 export default {
   components: { AuthPassword, BackBtn, SignPassword },
   name: "Password",
-  data: () => ({}),
+  computed: {
+    commandType() {
+      return this.$store.state.commandType;
+    },
+  },
   props: {},
   methods: {
     next(pin) {

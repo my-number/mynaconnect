@@ -26,14 +26,14 @@
         回です
       </div>
     </div>
-    <Keypad @submit="onSubmit"></Keypad>
+    <Keypad @submit="onSubmit" autofocus></Keypad>
   </div>
 </template>
 
 <script lang="ts">
 import Keypad from "./Keypad.vue";
 
-import Btn from "./Btn";
+import Btn from "./Btn.vue";
 const passwordRegex = /^[0-9]{4}$/;
 export default {
   components: { Keypad, Btn },

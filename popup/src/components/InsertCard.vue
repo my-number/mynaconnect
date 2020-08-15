@@ -30,7 +30,7 @@ export default {
             state.pin,
             state.sigHash
           );
-        case "getSignCert":
+        case "getAuthCert":
           return await getAuthCert(state.selectedReader.name);
         default:
           throw new Error("Unimplemented");
@@ -43,7 +43,7 @@ export default {
       try {
         const result = await this.execute();
         this.timerEnabled = false;
-        console.log(result);
+        this.handleSuccess(result);
       } catch (e) {
         if (e.data == SCARD_E_NO_SMARTCARD) {
           setTimeout(this._execute, INTERVAL);
@@ -54,8 +54,36 @@ export default {
       }
     },
     handleError(e) {
+      if (e.code == -4) {
+        const count = e.data;
+        const reader = this.$store.state.selectedReader;
+        if (!reader.mynumberCardInfo) {
+          reader.mynumberCardInfo = {};
+        }
+        const commandType = this.$store.state.commandType;
+        if (commandType === "signWithAuth") {
+          // auth pin retry
+          reader.mynumberCardInfo.authPinRemaining = count;
+        } else if (commandType === "signWithSign") {
+          // sign pin retry
+          reader.mynumberCardInfo.signPinRemaining = count;
+        }
+
+        this.$store.commit("setReader", reader);
+        this.$store.commit("setModal", "pin-incorrect");
+        return;
+      }
       console.error(e);
-      alert("エラーが発生しました。");
+      this.$store.commit("setModal", "error");
+    },
+    handleSuccess(data) {
+      this.$store.commit("setModal", "ok");
+      setTimeout(() => {
+        this.$store.state.channel.sendResult({
+          success: true,
+          ...data,
+        });
+      }, 3000);
     },
   },
   mounted() {
@@ -63,7 +91,7 @@ export default {
     this._execute();
   },
   beforeDestroy() {
-    setTimeout(this._execute, INTERVAL);
+    this.timerEnabled = false;
   },
 };
 </script>

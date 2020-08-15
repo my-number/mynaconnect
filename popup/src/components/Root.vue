@@ -21,6 +21,7 @@ export default {
   },
   watch: {
     commandType() {
+      [];
       this.next();
     },
   },
@@ -32,6 +33,9 @@ export default {
       const route = commandRoute[this.commandType];
       if (route) {
         this.$router.replace(route);
+      } else {
+        console.log("404");
+        this.$router.replace("/404");
       }
     },
   },

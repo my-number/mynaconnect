@@ -38,7 +38,10 @@ export default {
       this.$router.push("/select-reader");
     },
     deny() {
-      // todo
+      this.$store.state.channel.sendResult({
+        success: false,
+        cancelled: true,
+      });
     },
   },
 };
@@ -54,11 +57,11 @@ export default {
     }
   }
   .alert-box {
-    padding: 0.8em;
-    font-size: 0.9em;
+    padding: 0.8rem;
+    font-size: 0.9rem;
     background-color: #ffee77;
     border-radius: 6px;
-    margin: 9px;
+    margin: 1rem;
   }
   .help {
     text-align: right;
@@ -66,6 +69,9 @@ export default {
   .detail-container {
     display: flex;
     justify-content: center;
+  }
+  .actions {
+    margin: 1.5rem;
   }
 }
 </style>

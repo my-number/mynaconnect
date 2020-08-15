@@ -18,5 +18,6 @@ export default {
 <style lang="scss" scoped>
 .need-help {
   text-align: right;
+  display: none; // for now
 }
 </style>

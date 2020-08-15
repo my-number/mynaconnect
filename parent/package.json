@@ -5,23 +5,17 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "transpile": "babel src/ -d dist"
+    "dev": "webpack-dev-server"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
-    "@babel/plugin-transform-runtime": "^7.11.0",
-    "@babel/preset-env": "^7.11.0",
-    "babel-plugin-transform-es2015-modules-umd": "^6.24.1"
+    "ts-loader": "^8.0.2",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   },
-  "dependencies": {
-    "@babel/polyfill": "^7.10.4",
-    "@babel/runtime": "^7.11.2",
-    "core-js": "^3.6.5",
-    "regenerator-runtime": "^0.13.7"
-  }
+  "dependencies": {}
 }

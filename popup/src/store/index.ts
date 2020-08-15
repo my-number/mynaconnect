@@ -11,6 +11,7 @@ export default new Vuex.Store({
     selectedReader: null,
     sigHash: "",
     channel: new Channel(),
+    modal: null,
   }),
   mutations: {
     setSigHash(state, sigHash) {
@@ -27,6 +28,9 @@ export default new Vuex.Store({
     },
     setCommandType(state, typeName) {
       state.commandType = typeName;
+    },
+    setModal(state, name) {
+      state.modal = name;
     },
   },
   actions: {

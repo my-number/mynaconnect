@@ -13,9 +13,9 @@
       呼び出し元のURLは本当に正しいですか？今一度ご確認をお願いします。
     </div>
     <div class="actions">
-      <btn @click="$emit('allow')">許可</btn>
+      <btn @click="allow">許可</btn>
 
-      <btn transparent caution @click="$emit('deny')">キャンセル</btn>
+      <btn transparent caution @click="deny">キャンセル</btn>
     </div>
     <need-help></need-help>
   </div>
@@ -33,6 +33,17 @@ export default {
       required: true,
     },
   },
+  methods: {
+    allow() {
+      this.$router.push("/select-reader");
+    },
+    deny() {
+      this.$store.state.channel.sendResult({
+        success: false,
+        cancelled: true,
+      });
+    },
+  },
 };
 </script>
 
@@ -46,11 +57,11 @@ export default {
     }
   }
   .alert-box {
-    padding: 0.8em;
-    font-size: 0.9em;
+    padding: 0.8rem;
+    font-size: 0.9rem;
     background-color: #ffee77;
     border-radius: 6px;
-    margin: 9px;
+    margin: 1rem;
   }
   .help {
     text-align: right;
@@ -58,6 +69,9 @@ export default {
   .detail-container {
     display: flex;
     justify-content: center;
+  }
+  .actions {
+    margin: 1.5rem;
   }
 }
 </style>

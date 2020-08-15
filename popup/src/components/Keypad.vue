@@ -6,6 +6,7 @@
         pattern="^[0-9]{0,4}$"
         v-model="value"
         @keydown="keyboardInput"
+        ref="keypadInput"
       />
     </div>
     <div class="pads">
@@ -52,6 +53,9 @@ export default Vue.extend({
       pads: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     };
   },
+  props: {
+    autofocus: Boolean,
+  },
   methods: {
     shuffle() {
       const pads = this.pads;
@@ -86,6 +90,9 @@ export default Vue.extend({
         this.submit();
       }
     },
+  },
+  mounted() {
+    this.autofocus && this.$refs.keypadInput.focus();
   },
 });
 </script>

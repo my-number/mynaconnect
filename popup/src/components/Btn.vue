@@ -37,14 +37,20 @@ export default {
   &:active {
     background-color: #1e65c8;
   }
+  &.caution {
+    background-color: #f44336;
+    &:active {
+      background-color: #b73228;
+    }
+  }
   &.transparent {
     color: #377ee1;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: transparent;
     &:active {
       background-color: rgba(0, 0, 0, 0.25);
     }
     &.caution {
-      color: #ff4545;
+      color: #f44336;
     }
   }
   &.inline {

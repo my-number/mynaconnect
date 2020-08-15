@@ -1,6 +1,11 @@
 <template>
   <div class="list-item" :class="{ button, header }">
-    <slot></slot>
+    <div class="icon" v-show="icon">
+      <span :class="icon"></span>
+    </div>
+    <div class="content">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -10,23 +15,28 @@ export default {
   props: {
     button: Boolean,
     header: Boolean,
+    icon: String,
   },
 };
 </script>
 
 <style lang="scss">
 .list-item {
-  height: 3rem;
-  line-height: 3rem;
-  padding-left: 1rem;
+  display: flex;
+  flex-direction: row;
+  padding: 12px;
   background-color: white;
+
+  .icon {
+    display: flex;
+    align-items: center;
+    padding: 2px;
+  }
   &.button:active {
     background-color: #ccc;
   }
   &.header {
-    height: 1.5rem;
-    line-height: 1.5rem;
-    padding-left: 0rem;
+    padding: 0.1rem;
     background-color: transparent;
   }
 }

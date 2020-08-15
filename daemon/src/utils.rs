@@ -1,4 +1,3 @@
-use crate::error::Error;
 use pcsc::{Card, Context, Error as PcscError, Scope};
 use std::ffi::CStr;
 pub(crate) fn open_card(name: String) -> Result<Card, PcscError> {

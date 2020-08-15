@@ -75,7 +75,7 @@ import BackBtn from "./BackBtn.vue";
 import List from "./List.vue";
 import Spinner from "./Spinner.vue";
 import ListItem from "./ListItem.vue";
-import Btn from "./Btn";
+import Btn from "./Btn.vue";
 
 import { getReaders } from "../rpc";
 import * as pcscConst from "../utils/pcsc-consts";

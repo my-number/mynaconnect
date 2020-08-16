@@ -16,14 +16,24 @@
       <div class="icon">
         <span class="icon-error_outline"></span>
       </div>
-
-      <div class="title">{{ pinOrPassword }}が間違っています</div>
-      <div class="description">
-        もう一度、正しい{{ pinOrPassword }}を入力してください。 <br />
-        残りの再試行回数は <span class="count">{{ count }}</span> 回です
+      <div v-show="count > 0">
+        <div class="title">{{ pinOrPassword }}が間違っています</div>
+        <div class="description">
+          もう一度、正しい{{ pinOrPassword }}を入力してください。 <br />
+          残りの再試行回数は <span class="count">{{ count }}</span> 回です
+        </div>
+        <div class="action">
+          <Btn @click="back">パスワード入力画面へ</Btn>
+        </div>
       </div>
-      <div class="action">
-        <Btn @click="back">パスワード入力画面へ</Btn>
+      <div v-show="count == 0">
+        <div class="title">カードが<b>ロック</b>されました</div>
+        <div class="description">
+          住民票がある市区町村の窓口にて、パスワードの再設定手続を行ってください。
+        </div>
+        <div class="action">
+          <Btn caution @click="exitWithError">終了する</Btn>
+        </div>
       </div>
     </div>
     <div class="error modal" :class="{ show: showing == 'error' }">

@@ -1,0 +1,15 @@
+name: "Build parent script"
+on: [push]
+jobs:
+  build:
+    name: "Build parent script"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: cd parent && npm i && npm run build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: parent-script
+          path: daemon/dist/main.js

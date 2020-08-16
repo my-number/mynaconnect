@@ -25,9 +25,9 @@ jobs:
         with:
           toolchain: stable
       - name: Build
-        run: cargo build --release
+        run: cd daemon && cargo build --release
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.asset_name }}
-          path: target/release/${{ matrix.artifact_name }}
+          path: daemon/target/release/${{ matrix.artifact_name }}

@@ -43,7 +43,6 @@ export default {
 
       return this.execute()
         .then((result) => {
-          const result = await this.execute();
           this.timerEnabled = false;
           this.handleSuccess(result);
         })

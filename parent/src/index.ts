@@ -51,7 +51,7 @@ export class Popup {
   }
   send(typeName: string, data = {}) {
     if (!this.target) {
-      throw new Error("No window");
+      return;
     }
     this.target.postMessage(
       {
@@ -86,6 +86,11 @@ export class Popup {
     this.windowTimer = setInterval(() => {
       this.target.closed && this.close();
     }, 400);
+
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      this.close();
+    });
   }
   close() {
     this.windowTimer && clearInterval(this.windowTimer);

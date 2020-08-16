@@ -1,24 +1,3 @@
-import { ORIGIN } from "./config";
-
-interface ChildReady {
-  type: "childReady";
-}
-interface ParentReady {
-  type: "parentReady";
-  data: {
-    appName: string;
-    commandType: string;
-    remoteOrigin: string;
-    sigHash?: string;
-  };
-}
-interface Result {
-  type: "result";
-  data: {
-    success: true;
-    arbitraryData?: any;
-  };
-}
 interface Message {
   type: string;
   data: object;

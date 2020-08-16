@@ -15,43 +15,46 @@ import BackBtn from "./BackBtn.vue";
 import { computeAuthSig, getAuthCert } from "../rpc";
 import { SCARD_E_NO_SMARTCARD } from "../utils/pcsc-consts";
 
-const INTERVAL = 1500;
+const INTERVAL = 1000;
 export default {
   components: { BackBtn },
   name: "InsertCard",
   data: () => ({ timerEnabled: false, timer: null }),
   methods: {
-    async execute() {
+    execute() {
       const state = this.$store.state;
       switch (state.commandType) {
         case "signWithAuth":
-          return await computeAuthSig(
+          return computeAuthSig(
             state.selectedReader.name,
             state.pin,
             state.sigHash
           );
         case "getAuthCert":
-          return await getAuthCert(state.selectedReader.name);
+          return getAuthCert(state.selectedReader.name);
         default:
-          throw new Error("Unimplemented");
+          Promise.reject(new Error("Unimplemented"));
       }
     },
-    async _execute() {
+    _execute() {
       if (!this.timerEnabled) {
         return;
       }
-      try {
-        const result = await this.execute();
-        this.timerEnabled = false;
-        this.handleSuccess(result);
-      } catch (e) {
-        if (e.data == SCARD_E_NO_SMARTCARD) {
-          setTimeout(this._execute, INTERVAL);
-          return;
-        }
-        this.timerEnabled = false;
-        this.handleError(e);
-      }
+
+      return this.execute()
+        .then((result) => {
+          const result = await this.execute();
+          this.timerEnabled = false;
+          this.handleSuccess(result);
+        })
+        .catch((e) => {
+          if (e.data == SCARD_E_NO_SMARTCARD) {
+            setTimeout(this._execute, INTERVAL);
+            return;
+          }
+          this.timerEnabled = false;
+          this.handleError(e);
+        });
     },
     handleError(e) {
       if (e.code == -4) {
